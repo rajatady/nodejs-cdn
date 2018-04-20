@@ -36,8 +36,3 @@ pipelines:
     - step:
         script:
           - echo "Other branches do not build"
-
-definitions:
-  services:
-    mongo:
-      image: mongo
