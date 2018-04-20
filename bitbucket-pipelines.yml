@@ -14,9 +14,9 @@ options:
 pipelines:
   branches:
     master:
-       - step:
-          caches:
-            - node
+       #- step:
+       #   caches:
+       #     - node
           #script: # Modify the commands below to build your repository.
             #- npm install
             #- npm test
