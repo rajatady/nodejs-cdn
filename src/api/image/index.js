@@ -1,6 +1,6 @@
-import { Router } from 'express'
-import { middleware as query } from 'querymen'
-import { create, index, show, update, destroy } from './controller'
+import {Router} from 'express'
+import {middleware as query} from 'querymen'
+import {create, destroy, destroyAll, index, show, update} from './controller'
 import {uploadMiddleware} from '../../services/digitalocean'
 
 const router = new Router()
@@ -26,7 +26,11 @@ router.post('/',
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
 router.get('/',
-  query(),
+  query({
+    listFolders: {
+      type: Boolean
+    }
+  }),
   index)
 
 /**
@@ -60,5 +64,15 @@ router.put('/:id',
  */
 router.delete('/:id',
   destroy)
+
+/**
+ * @api {delete} /images/ Delete all images
+ * @apiName DeleteImage
+ * @apiGroup Image
+ * @apiSuccess (Success 204) 204 No Content.
+ * @apiError 404 Image not found.
+ */
+router.delete('/',
+  destroyAll)
 
 export default router

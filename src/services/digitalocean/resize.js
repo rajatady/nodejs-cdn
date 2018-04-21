@@ -4,9 +4,8 @@ import rgbHex from 'rgb-hex'
 import getImageData from 'get-image-data'
 import dominant from 'huey/dominant'
 import _ from 'lodash'
-
-const localUploadPath = process.env.LOCAL_TEMP_FOLDER + '/'
-const s3UploadPath = process.env.UPLOAD_PATH + '/'
+import moment from 'moment'
+import {getUploadsFolderPath} from './utils'
 
 const getPathName = (path, skips) => {
   const a = path.split('/')
@@ -20,6 +19,7 @@ export const resizeImage = function (image, sizes) {
   // image.fileName = image.fileName.replace(/\s+/g, '');
   const fileName = image.filename.split('.')[0]
   const extension = '.' + image.filename.split('.').splice(-1)
+  const localUploadPath = getUploadsFolderPath()
   const fullPath = localUploadPath + fileName + extension
   const imageDaTa = sharp(fullPath)
   image.extension = extension
@@ -90,9 +90,8 @@ export const resizeImage = function (image, sizes) {
                 b: rgb[2]
               }
               _.forOwn(image.urls, (url, key) => {
-                const remote = url.replace(localUploadPath, s3UploadPath)
                 image.uploadPaths.push({
-                  remote: remote.replace('/', ''),
+                  remote: url.replace('/', ''),
                   local: url.replace('/', '')
                 })
               })

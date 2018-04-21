@@ -5,6 +5,8 @@ import {resizeImage} from './resize'
 import BlueBird from 'bluebird'
 import fs from 'fs'
 // import multerS3 from 'multer-s3'
+import _ from 'lodash'
+import {getUploadsFolderPath} from './utils'
 
 aws.config.update({
   accessKeyId: process.env.DO_SPACES_KEY,
@@ -20,10 +22,12 @@ const s3 = new aws.S3({
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, process.env.LOCAL_TEMP_FOLDER)
+    callback(null, getUploadsFolderPath())
   },
   filename: function (req, file, callback) {
-    callback(null, file.originalname.split('.')[0] + '-' + Date.now() + path.extname(file.originalname))
+    let name = file.originalname.split('.')[0] + '-' + Date.now() + path.extname(file.originalname)
+    name = _.replace(name, /\s/g, '_')
+    callback(null, name)
   }
 })
 
@@ -51,8 +55,8 @@ const localUpload = multer({storage: storage}).array('files', 20)
 export const uploadMiddleware = (request, response, next) => {
   _localUpload(request, response)
     .then(req => {
-      const sizes = JSON.parse(req.body.sizes)
-      console.log(req.files)
+      const sizes = JSON.parse(req.body.sizes) || []
+      console.log(sizes)
       return BlueBird.map(req.files, o => resizeImage(o, sizes))
     })
     .then(result => {
@@ -67,6 +71,7 @@ export const uploadMiddleware = (request, response, next) => {
 
 const _localUpload = (request, response) => {
   return new Promise((resolve, reject) => {
+    console.log(request.body)
     localUpload(request, response, function (err) {
       if (err) {
         reject(err)

@@ -12,7 +12,6 @@ const server = http.createServer(app)
 mongoose.connect(mongo.uri, { useMongoClient: true })
 mongoose.Promise = Promise
 
-mkdirp.sync(path.resolve(process.env.LOCAL_TEMP_FOLDER))
 
 setImmediate(() => {
   server.listen(port, ip, () => {

@@ -59,6 +59,7 @@
     "huey": "^2.0.0",
     "lodash": "^4.17.5",
     "mkdirp": "^0.5.1",
+    "moment": "^2.22.1",
     "mongoose": "^4.12.4",
     "mongoose-create-unique": "^0.4.4",
     "mongoose-keywords": "^0.3.2",
