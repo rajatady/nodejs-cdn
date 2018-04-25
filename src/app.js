@@ -1,17 +1,13 @@
 import http from 'http'
-import { env, mongo, port, ip, apiRoot } from './config'
-import mongoose from './services/mongoose'
+import {apiRoot, env, ip, port} from './config'
 import express from './services/express'
 import api from './api'
-import mkdirp from 'mkdirp'
-import path from 'path'
 
 const app = express(apiRoot, api)
 const server = http.createServer(app)
 
-mongoose.connect(mongo.uri, { useMongoClient: true })
-mongoose.Promise = Promise
-
+// mongoose.connect(mongo.uri, { useMongoClient: true })
+// mongoose.Promise = Promise
 
 setImmediate(() => {
   server.listen(port, ip, () => {
