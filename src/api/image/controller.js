@@ -1,7 +1,7 @@
-import {removeAllImages, removeImages, uploadImagesToDO, getAllImages} from '../../services/digitalocean'
+import {getAllImages, removeAllImages, removeImages, uploadImagesToDO} from '../../services/digitalocean'
 
 export const create = ({body, data}, res, next) => {
-  console.log(data)
+  console.log('Data', data)
   uploadImagesToDO(data)
     .then(result => {
       return removeImages(data)

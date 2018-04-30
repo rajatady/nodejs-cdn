@@ -1,0 +1,25 @@
+name: node
+type: nodejs:6.9
+
+web:
+  commands:
+    start: "PM2_HOME=/app/run pm2 start src/index.js --no-daemon"
+    #in this setup you will find your application stdout and stderr in /app/run/logs
+  locations:
+    "/public":
+      passthru: false
+      root: "public"
+      # Whether to allow files not matching a rule or not.
+      allow: true
+      rules:
+        '\.png$':
+          allow: true
+          expires: -1
+dependencies:
+  nodejs:
+    pm2: "^2.5.0"
+mounts:
+   run:
+       source: local
+       source_path: run
+disk: 512

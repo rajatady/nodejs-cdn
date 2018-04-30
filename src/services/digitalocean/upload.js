@@ -55,8 +55,9 @@ const localUpload = multer({storage: storage}).array('files', 20)
 export const uploadMiddleware = (request, response, next) => {
   _localUpload(request, response)
     .then(req => {
+      console.log('Test', req.body, req.files)
       const sizes = JSON.parse(req.body.sizes) || []
-      console.log(sizes)
+      console.log(sizes, req.files)
       return BlueBird.map(req.files, o => resizeImage(o, sizes))
     })
     .then(result => {
@@ -71,7 +72,6 @@ export const uploadMiddleware = (request, response, next) => {
 
 const _localUpload = (request, response) => {
   return new Promise((resolve, reject) => {
-    console.log(request.body)
     localUpload(request, response, function (err) {
       if (err) {
         reject(err)
