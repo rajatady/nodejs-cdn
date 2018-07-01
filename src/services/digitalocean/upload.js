@@ -22,7 +22,7 @@ const s3 = new aws.S3({
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, getUploadsFolderPath())
+    callback(null, getUploadsFolderPath(true))
   },
   filename: function (req, file, callback) {
     let name = file.originalname.split('.')[0] + '-' + Date.now() + path.extname(file.originalname)
@@ -55,18 +55,31 @@ const localUpload = multer({storage: storage}).array('files', 20)
 export const uploadMiddleware = (request, response, next) => {
   _localUpload(request, response)
     .then(req => {
-      console.log('Test', req.body, req.files)
       const sizes = JSON.parse(req.body.sizes) || []
-      console.log(sizes, req.files)
       return BlueBird.map(req.files, o => resizeImage(o, sizes))
     })
     .then(result => {
+      if (process.env.STORAGE_ENGINE === 'local') {
+        result = result.map(imageData => {
+          imageData.destination.replace('public', '')
+          imageData.path.replace('/public', '')
+          _.forOwn(imageData.urls, (val, key) => {
+            imageData.urls[key] = val.replace('/public', '')
+          })
+          imageData.uploadPaths = imageData.uploadPaths.map(path => {
+            _.forOwn(path, (val, key) => {
+              path[key] = val.replace('public', '')
+            })
+            return path
+          })
+          return imageData
+        })
+      }
       request.data = result
       next()
     })
     .catch(err => {
-      console.log(err.stack)
-      next()
+      response.status(err.code || 500).send(err.message || 'Error uploading images')
     })
 }
 
@@ -83,9 +96,13 @@ const _localUpload = (request, response) => {
 }
 
 export const uploadImagesToDO = (images) => {
-  return BlueBird.map(images, image => {
-    return _performUpload(image.uploadPaths, image.mimetype)
-  })
+  if (process.env.STORAGE_ENGINE === 'local') {
+    return Promise.resolve(images);
+  } else {
+    return BlueBird.map(images, image => {
+      return _performUpload(image.uploadPaths, image.mimetype)
+    })
+  }
 }
 
 const _performUpload = (pathList, mimeType) => {

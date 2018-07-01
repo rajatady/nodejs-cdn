@@ -7,6 +7,7 @@ import bodyParser from 'body-parser'
 import {errorHandler as queryErrorHandler} from 'querymen'
 import {errorHandler as bodyErrorHandler} from 'bodymen'
 import {env} from '../../config'
+import path from 'path'
 
 export default (apiRoot, routes) => {
   const app = express()
@@ -30,6 +31,10 @@ export default (apiRoot, routes) => {
   app.use(bodyParser.urlencoded({extended: false}))
   app.use(bodyParser.json())
   app.use(apiRoot, routes)
+
+  app.get('/' + process.env.UPLOAD_PATH + '*', (req, res) => {
+    res.sendfile(req.path, {root: path.join(__dirname, '../../../public')})
+  })
   app.use(queryErrorHandler())
   app.use(bodyErrorHandler())
 

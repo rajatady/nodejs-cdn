@@ -4,7 +4,6 @@ import rgbHex from 'rgb-hex'
 import getImageData from 'get-image-data'
 import dominant from 'huey/dominant'
 import _ from 'lodash'
-import moment from 'moment'
 import {getUploadsFolderPath} from './utils'
 
 const getPathName = (path, skips) => {

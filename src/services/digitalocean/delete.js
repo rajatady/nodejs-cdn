@@ -27,7 +27,8 @@ const _performDeletion = (paths) => {
     return new Promise((resolve, reject) => {
       fs.unlink(path.resolve(o.local), (err, res) => {
         if (err) {
-          reject(err)
+          console.log('Error removing local image : ', err)
+          resolve()
         } else {
           console.log('Removed local file : ', o.local)
           resolve()

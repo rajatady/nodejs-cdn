@@ -1,17 +1,20 @@
 import {getAllImages, removeAllImages, removeImages, uploadImagesToDO} from '../../services/digitalocean'
 
 export const create = ({body, data}, res, next) => {
-  console.log('Data', data)
   uploadImagesToDO(data)
     .then(result => {
-      return removeImages(data)
+      if (process.env.STORAGE_ENGINE === 'local') {
+        return Promise.resolve(result)
+      } else {
+        return removeImages(data)
+      }
     })
     .then(result => {
       res.status(200).json(data)
     })
     .catch(err => {
-      console.log(err.stack)
-      res.status(500).json({error: err.message || 'Some error occurred', data: data})
+      console.log(err)
+      res.status(200).json({error: err.message || 'Some error occurred', data: data})
     })
 }
 
