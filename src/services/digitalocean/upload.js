@@ -22,7 +22,8 @@ const s3 = new aws.S3({
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, getUploadsFolderPath(true))
+    console.log(req.body)
+    callback(null, getUploadsFolderPath({path: req.headers.path}))
   },
   filename: function (req, file, callback) {
     let name = file.originalname.split('.')[0] + '-' + Date.now() + path.extname(file.originalname)
@@ -56,7 +57,7 @@ export const uploadMiddleware = (request, response, next) => {
   _localUpload(request, response)
     .then(req => {
       const sizes = JSON.parse(req.body.sizes) || []
-      return BlueBird.map(req.files, o => resizeImage(o, sizes))
+      return BlueBird.map(req.files, o => resizeImage(o, sizes, {path: req.headers.path}))
     })
     .then(result => {
       if (process.env.STORAGE_ENGINE === 'local') {

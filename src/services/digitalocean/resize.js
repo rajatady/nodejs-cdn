@@ -14,11 +14,11 @@ const getPathName = (path, skips) => {
   return '/' + a.join('/')
 }
 
-export const resizeImage = function (image, sizes) {
+export const resizeImage = function (image, sizes, options) {
   // image.fileName = image.fileName.replace(/\s+/g, '');
   const fileName = image.filename.split('.')[0]
   const extension = '.' + image.filename.split('.').splice(-1)
-  const localUploadPath = getUploadsFolderPath()
+  const localUploadPath = getUploadsFolderPath(options)
   const fullPath = localUploadPath + fileName + extension
   const imageDaTa = sharp(fullPath)
   image.extension = extension
